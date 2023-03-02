@@ -30,7 +30,6 @@ Band.init(
     
     {
         sequelize,
-        modelName:'Band'
     }
 )
 

@@ -6,11 +6,8 @@ const {Song} = require('./Song')
 
 Band.hasMany(Musician);
 Musician.belongsTo(Band);
-
- 
-
-   
-
+Song.belongsToMany(Band,{through:'band_song'})
+Band.belongsToMany(Song,{through:'band_song'})
 
 
 

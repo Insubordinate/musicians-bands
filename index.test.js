@@ -88,4 +88,49 @@ describe('Band and Musician Models', () => {
         expect(result[0].BandId).toBe(1)
     })
 
-})
+    test('Can add Songs to Band',async()=>{
+        await Band.create({name:'wow',genre:'test',showCount:'100'})
+        await Song.bulkCreate([{name:'sure',year:1990},{name:'sure2',year:1991}])
+
+
+        let someBand = await Band.findByPk(1)
+        let someSong = await Song.findByPk(1)
+        let someSong2 = await Song.findByPk(2)
+
+        await someBand.addSong(someSong)
+        await someBand.addSong(someSong2)
+
+
+        let testModel = await Band.findByPk(1)
+        var testData = await testModel.getSongs({raw:true})
+
+        var testData1 = testData[0]
+        expect(testData1.name).toBe('sure')
+
+        var testData2 = testData[1]
+        expect(testData2.name).toBe('sure2')
+    })
+
+    test('Can add Bands to Song',async()=>{
+        await Band.bulkCreate([{name:'wow',genre:'test',showCount:'100'},{name:'wow2',genre:'test2',showCount:'100'}])
+        await Song.create({name:'sure',year:1990})
+
+
+        let someSong= await Song.findByPk(1)
+        let someBand1 = await Band.findByPk(1)
+        let someBand2 = await Band.findByPk(2)
+
+        await someSong.addBand(someBand1)
+        await someSong.addBand(someBand2)
+
+
+        let testModel = await Song.findByPk(1)
+        var testData = await testModel.getBands({raw:true})
+
+        var testData1 = testData[0]
+        expect(testData1.name).toBe('wow')
+
+        var testData2 = testData[1]
+        expect(testData2.name).toBe('wow2')
+    })
+})    
