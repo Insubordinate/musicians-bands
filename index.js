@@ -17,5 +17,7 @@ Musician.belongsTo(Band);
 
 module.exports = {
     Band,
-    Musician
+    Musician,
+    Song,
+    sequelize
 };

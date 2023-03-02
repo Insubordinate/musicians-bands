@@ -8,7 +8,7 @@ class Song extends Model{
 
 Song.init({
     name:Sequelize.STRING,
-    year:Sequelize.INT,
+    year:Sequelize.INTEGER,
 },{sequelize})
 
 

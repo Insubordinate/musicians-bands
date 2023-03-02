@@ -1,5 +1,4 @@
-const {sequelize} = require('./db');
-const {Band, Musician} = require('./index');
+const {Band, Musician,sequelize,Song} = require('./index');
 
 
 describe('Band and Musician Models', () => {
@@ -20,6 +19,14 @@ describe('Band and Musician Models', () => {
         expect(results[0].showCount).toBe(100)
         expect(results[0].name).toBe('Nirvana');
         expect(results[0].genre).toBe('Grunge');
+    })
+
+    test('Can create a song',async()=>{
+
+        const testSong = await Song.create({name:'Whoop',year:1990})
+        var results = await Song.findAll({raw:true})
+        expect(results[0].name).toBe('Whoop')
+        expect(results[0].year).toBe(1990);
     })
 
     test('can update a band',async()=>{
