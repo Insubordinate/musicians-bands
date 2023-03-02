@@ -83,9 +83,17 @@ describe('Band and Musician Models', () => {
     test('Check to see if Musician can be added to a band',async()=>{
         await Band.create({name:'wow',genre:'test',showCount:'100'})
         await Musician.create({name:'Bill',instrument:'Drums'})
-        await Musician.addBand('wow','Bill')
-        result = await Musician.findAll({raw:true})
-        expect(result[0].BandId).toBe(1)
+        let testBand = await Band.findByPk(1)
+        let testMusician = await Musician.findByPk(1)
+        await testBand.addMusician(testMusician)
+
+        let verifyAdd = await Band.findByPk(1)
+        var testData = await verifyAdd.getMusicians({raw:true})
+
+        var testData1 = testData[0]
+        expect(testData1.name).toBe('Bill')
+
+
     })
 
     test('Can add Songs to Band',async()=>{
@@ -132,5 +140,38 @@ describe('Band and Musician Models', () => {
 
         var testData2 = testData[1]
         expect(testData2.name).toBe('wow2')
+    })
+
+    test('Testing Eager Loading',async()=>{
+        await Band.bulkCreate([{name:'Nirvana',genre:'Grunge',showCount:'100'},{name:'Black Sabbath',genre:'Metal',showCount:'200'}])
+        await Song.bulkCreate([{name:'Lithium',year:1990},{name:'Polly',year:1991}])
+        await Musician.bulkCreate([{name:'Dave Grohl',instrument:'Drums'},{name:"Kurt Cobain",instrument:'Vocals'}])
+
+        //Add Songs to Nirvana, Add Musicians to Nirvana
+
+        var findNirvana = await Band.findAll({where:{name:'Nirvana'}})
+        findNirvana = findNirvana[0]
+
+
+        var findLithium = await Song.findAll({where:{name:"Lithium"}})
+        findLithium= findLithium[0]
+        var findPolly = await Song.findAll({where:{name:"Polly"}})
+        findPolly = findPolly[0]
+
+        var findDave = await Musician.findAll({where:{name:"Kurt Cobain"}})
+        findDave = findDave[0]
+        let findKurt = await Musician.findAll({where:{name:"Dave Grohl"}})
+        findKurt = findKurt[0]
+        
+        await findNirvana.addSongs([findLithium,findPolly]);
+        await findNirvana.addMusicians([findDave,findKurt]);
+
+        var verifyAdds = await Band.findAll({where:{name:'Nirvana'},include:Song})
+        verifyAdds = verifyAdds[0]
+        expect(verifyAdds.Songs.length).toBe(2)
+
+        var verifyAdds = await Band.findAll({where:{name:'Nirvana'},include:Musician})
+        verifyAdds = verifyAdds[0]
+        expect(verifyAdds.Musicians.length).toBe(2)
     })
 })    

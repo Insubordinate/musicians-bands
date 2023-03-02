@@ -10,8 +10,6 @@ Song.belongsToMany(Band,{through:'band_song'})
 Band.belongsToMany(Song,{through:'band_song'})
 
 
-
-
 module.exports = {
     Band,
     Musician,

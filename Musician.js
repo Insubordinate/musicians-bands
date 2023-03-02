@@ -18,11 +18,6 @@ class Musician extends Model{
         });
     }
 
-    static async addBand(bandName,musicianName){
-
-        let findBand = await Band.findAll({where:{'name':bandName},raw:true})
-        await this.update({BandId:findBand[0].id},{where:{name:musicianName}})
-    }
 }
 
 Musician.init(
