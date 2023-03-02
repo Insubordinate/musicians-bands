@@ -1,26 +1,44 @@
-const {Sequelize, sequelize} = require('./db');
-
+const {Sequelize, Model,sequelize} = require('./db');
+const {Band} = require('./Band')
 // TODO - define the Musician model
-let Musician = sequelize.define('musician',{
-    name:Sequelize.STRING,
-    instrument:Sequelize.STRING
-})
 
-async function updateMusician(musician,newName,newGenre){
-    musician.name = newName;
-    musician.instrument = newGenre
-    await musician.save()
+
+class Musician extends Model{
+    async updateMusician(newName,newGenre){
+        this.name = newName;
+        this.instrument = newGenre
+        await this.save()
+    }
+    
+    static async deleteMusician(columnValue){
+        await this.destroy({
+            where:{
+                'name':columnValue
+            }
+        });
+    }
+
+    static async addBand(bandName,musicianName){
+
+        let findBand = await Band.findAll({where:{'name':bandName},raw:true})
+        await this.update({BandId:findBand[0].id},{where:{name:musicianName}})
+    }
 }
 
-async function deleteMusician(instance,columnName,columnValue){
-    await instance.destroy({
-        where:{
-            columnName:columnValue
-        }
-    });
-}
+Musician.init(
+    {
+        name:Sequelize.STRING,
+        instrument:Sequelize.STRING,
+    
+        
+    },
+    {
+        sequelize,
+        modelName:'Musician'
+    }
+)
+
+
 module.exports = {
     Musician,
-    updateMusician,
-    deleteMusician
 };

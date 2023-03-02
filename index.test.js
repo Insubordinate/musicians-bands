@@ -1,7 +1,6 @@
-const { updateBand,deleteBand } = require('./Band');
 const {sequelize} = require('./db');
 const {Band, Musician} = require('./index');
-const { updateMusician,deleteMusician } = require('./Musician');
+
 
 describe('Band and Musician Models', () => {
     /**
@@ -25,7 +24,7 @@ describe('Band and Musician Models', () => {
 
     test('can update a band',async()=>{
         const testBand = await Band.create({name:'Nirvana',genre:'Grunge',showCount:100});
-        await updateBand(testBand,'Foo Fighters','Dad Rock',20)
+        await testBand.updateBand('Foo Fighters','Dad Rock',20)
         var results = await Band.findAll({raw:true});
         expect(results[0].name).toBe('Foo Fighters');
         expect(results[0].genre).toBe('Dad Rock');
@@ -35,7 +34,7 @@ describe('Band and Musician Models', () => {
 
     test('can delete a band',async()=>{
         const testBand = await Band.create({name:'Nirvana',genre:'Grunge',showCount:100});
-        deleteBand(testBand,'name','nirvana')
+        Band.deleteBand('Nirvana')
         var results = await Band.findAll({raw:true})
         expect(results.length).toBe(0)
         
@@ -44,14 +43,15 @@ describe('Band and Musician Models', () => {
     test('can create a Musician', async () => {
         // TODO - test creating a musician
         const testMusician = await Musician.create({name:'Kurt',instrument:'Vocals'})
-        expect(testMusician.name).toBe('Kurt');
-        expect(testMusician.instrument).toBe('Vocals')
+        var results = await Musician.findAll({raw:true});
+        expect(results[0].name).toBe('Kurt');
+        expect(results[0].instrument).toBe('Vocals');
 
     })
 
     test('Can update a Musician', async()=>{
         const testMusician = await Musician.create({name:'Kurt',instrument:'Vocals'})
-        updateMusician(testMusician,'Bill','Drums')
+        await testMusician.updateMusician('Bill','Drums')
         var results = await Musician.findAll({raw:true})
         expect(results[0].name).toBe('Bill');
         expect(results[0].instrument).toBe('Drums');
@@ -60,9 +60,27 @@ describe('Band and Musician Models', () => {
 
     test('Can delete a Musician',async()=>{
         const testMusician= await Musician.create({name:'Kurt',instrument:'Vocals'});
-        deleteMusician(testMusician,'name','Kurt')
+        await Musician.deleteMusician('Kurt')
         var results = await Musician.findAll({raw:true})
         expect(results.length).toBe(0)
 
     })
+
+    test('Check the Associations',async()=>{
+        await Band.create({name:'wow',genre:'test',showCount:'100'})
+        await Musician.create({name:'Bill',instrument:'Drums'})
+        result = await Musician.findAll({raw:true})
+        expect(result[0].BandId).toBe(null)
+    })
+
+    test('Check to see if Musician can be added to a band',async()=>{
+        await Band.create({name:'wow',genre:'test',showCount:'100'})
+        await Musician.create({name:'Bill',instrument:'Drums'})
+        await Musician.addBand('wow','Bill')
+        result = await Musician.findAll({raw:true})
+        expect(result[0].BandId).toBe(1)
+
+
+    })
+
 })

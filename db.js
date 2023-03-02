@@ -10,5 +10,6 @@ const sequelize = new Sequelize({
 
 module.exports = {
     sequelize,
-    Sequelize
+    Sequelize,
+    Model
 };
