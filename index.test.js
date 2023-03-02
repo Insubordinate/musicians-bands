@@ -79,8 +79,6 @@ describe('Band and Musician Models', () => {
         await Musician.addBand('wow','Bill')
         result = await Musician.findAll({raw:true})
         expect(result[0].BandId).toBe(1)
-
-
     })
 
 })
